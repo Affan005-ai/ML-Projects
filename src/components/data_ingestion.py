@@ -12,6 +12,8 @@ from src.components.data_transformation import data_transformation_config
 
 from src.components.model_trainer import ModelTrainerConfig
 from src.components.model_trainer import ModelTrainer
+from src.utils import save_object, load_object, evaluate_models
+
 
 
 @dataclass
@@ -61,11 +63,8 @@ if __name__ == "__main__":
     train_arr,test_arr,_=data_transformation.initiate_data_transformation(train_data, test_data)
 
     model_trainer= ModelTrainer()
-    r2_square, accuracy= model_trainer.initiate_model_trainer(train_arr, test_arr)
-    print(f"R2 Square: {r2_square}")
-    print(f"Accuracy: {accuracy}%")
-
-            
+    result= model_trainer.initiate_model_trainer(train_arr, test_arr)
+    print(result)                    
             
                 
         
