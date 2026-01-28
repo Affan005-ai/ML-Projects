@@ -43,7 +43,7 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, params):
                 search = RandomizedSearchCV(
                     estimator=model,
                     param_distributions=param_grid,
-                    n_iter=10,
+                    n_iter=9,
                     cv=3,
                     scoring="r2",
                     n_jobs=-1,

@@ -2,7 +2,7 @@ import os
 import sys
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import OrdinalEncoder, StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from src.logger import logging 
@@ -13,7 +13,7 @@ from src.utils import save_object
 
 @dataclass
 class data_transformation_config:
-    preprocessor_obj_file_path= os.path.join("artifacts", "preprocessor.pkl")
+    preprocessor_obj_file_path= os.path.join("artifacts", "preprocessor_1.pkl")
 
 
 class Data_Transformation:
@@ -27,31 +27,43 @@ class Data_Transformation:
             logging.info("Data Transformation initiated")
 
             numerical_columns= [ 'reading score', 'writing score']
-            categorical_columns= [
-                "gender",
-                "race/ethnicity",
+
+            ordinal_columns = [
                 "parental level of education",
                 "lunch",
                 "test preparation course"
             ]
+
+            nominal_columns = ["gender", "race/ethnicity"]
+
+            ordinal_pipeline = Pipeline(steps=[
+                ("imputer", SimpleImputer(strategy="most_frequent")),
+                ("encoder", OrdinalEncoder(categories=[
+                    ['some high school', 'high school', 'some college', "associate's degree", "bachelor's degree", "master's degree"],
+                    ['free/reduced', 'standard'],
+                    ['none', 'completed']
+                ]))
+            ])
+
+            nominal_pipeline = Pipeline(steps=[
+                ("imputer", SimpleImputer(strategy="most_frequent")),
+                ("encoder", OneHotEncoder(handle_unknown="ignore"))
+            ])
 
             num_pipeline= Pipeline(steps=[
                 ("imputer", SimpleImputer(strategy="median")),
                 ("scaler", StandardScaler())
             ])
 
-            cat_pipeline= Pipeline(steps=[
-                ("imputer", SimpleImputer(strategy="most_frequent")),
-                ("one_hot_encoder", OneHotEncoder(handle_unknown="ignore"))
-            ])
 
-            logging.info(f"categorical columns :{categorical_columns}")
+            logging.info(f"categorical columns :{ordinal_columns + nominal_columns}")
             logging.info(f"numerical columns :{numerical_columns}")
 
             preprocessor= ColumnTransformer(
                 transformers=[
                     ("num_pipeline", num_pipeline, numerical_columns),
-                    ("cat_pipeline", cat_pipeline, categorical_columns)
+                    ("ordinal_pipeline", ordinal_pipeline, ordinal_columns),
+                    ("nominal_pipeline", nominal_pipeline, nominal_columns) 
                 ]
             )
 
