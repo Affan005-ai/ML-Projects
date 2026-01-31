@@ -1,17 +1,35 @@
 
-from doctest import debug
-from multiprocessing.util import debug
+
 from flask import Flask,request, render_template
+from multiprocessing.util import debug
+
 import numpy as np
 import pandas as pd
 import pickle
 
 from sklearn.preprocessing import StandardScaler
+from src.logger import logger
 
 from src.pipeline.predict_pipeline import CustomData,PredictPipeline
 
-application = Flask(__name__)
-app = application   
+app = Flask(__name__)
+
+
+@app.before_request
+def log_request_info():
+    # Skip logging for static files
+    if request.path.startswith("/static/"):
+        return
+    logger.info(f"Request received | Method: {request.method} | URL: {request.url}")
+
+@app.after_request
+def log_response_info(response):
+    if request.path.startswith("/static/"):
+        return response
+    logger.info(f"Response sent | Status: {response.status}")
+    return response
+
+
 @app.route('/')
 def home():
     return render_template('home.html') 
@@ -42,4 +60,4 @@ def predict_datapoint():
     
 
 if __name__=="__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0',debug=True)
