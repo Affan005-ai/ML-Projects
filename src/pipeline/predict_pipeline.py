@@ -4,6 +4,7 @@ import os
 from src.exception import CustomException
 from src.logger import logging
 from src.utils import load_object
+from pathlib import Path
 
 class PredictPipeline:
     def __init__(self):
@@ -11,11 +12,17 @@ class PredictPipeline:
 
     def predict(self,features):
         try:
-            model_path=os.path.join("artifacts","model_1.pkl")
-            preprocessor_path=os.path.join('artifacts','preprocessor_1.pkl')
+         
+            # ...
+            BASE_DIR = Path(__file__).resolve().parents[2]  # project root
+            ARTIFACTS_DIR = BASE_DIR / "artifacts"
 
-            model=load_object(file_path=model_path)
-            preprocessor=load_object(file_path=preprocessor_path)
+            model_path = ARTIFACTS_DIR / "model_1.pkl"
+            preprocessor_path = ARTIFACTS_DIR / "preprocessor_1.pkl"
+
+            model = load_object(file_path=str(model_path))
+            preprocessor = load_object(file_path=str(preprocessor_path))
+
 
             data_scaled=preprocessor.transform(features)
 
