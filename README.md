@@ -126,9 +126,6 @@ What that track covers:
 5. Add CloudWatch logging and alarms
 6. Add health checks and rollback strategy
 
-## One Screenshot Proof
-
-![Deployment Proof](docs/screenshots/proof/deployment-proof.png)
 
 ## Quick Start
 
